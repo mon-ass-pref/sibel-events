@@ -76,65 +76,6 @@ document.addEventListener('click', event => {
 addEventListener('hashchange', () => revealDestination(location.hash));
 revealDestination(location.hash);
 
-const track = document.querySelector('#faq-track');
-const cards = [...track.querySelectorAll('.faq-card')];
-const pauseButton = document.querySelector('#faq-pause');
-let userPaused = reducedMotion.matches;
-let hovered = false, focused = false, inView = false, drag = null;
-let direction = 1, position = 0, lastTime = 0, frameId = 0, holdUntil = 0;
-function updatePause(){
-  pauseButton.setAttribute('aria-pressed',String(userPaused));
-  pauseButton.textContent=userPaused?'Reprendre le défilement':'Mettre en pause';
-}
-function canMove(){return inView&&!document.hidden&&!userPaused&&!hovered&&!focused&&!drag;}
-function animateQuestions(now){
-  frameId=0;
-  if(!canMove()){lastTime=0;return;}
-  const dt=lastTime?Math.min(now-lastTime,60):0;lastTime=now;
-  const max=Math.max(0,track.scrollWidth-track.clientWidth);
-  if(now>=holdUntil && max>0){
-    position=Math.max(0,Math.min(max,position+direction*dt*.014));
-    track.scrollLeft=position;
-    if((position>=max && direction>0)||(position<=0 && direction<0)){direction*=-1;holdUntil=now+2500;}
-  }
-  frameId=requestAnimationFrame(animateQuestions);
-}
-function syncMotion(){
-  if(canMove()&&!frameId){position=track.scrollLeft;lastTime=0;frameId=requestAnimationFrame(animateQuestions);}
-  else if(!canMove()&&frameId){cancelAnimationFrame(frameId);frameId=0;lastTime=0;}
-}
-pauseButton.addEventListener('click',()=>{userPaused=!userPaused;updatePause();syncMotion();});
-track.addEventListener('mouseenter',()=>{hovered=true;syncMotion();});
-track.addEventListener('mouseleave',()=>{hovered=false;syncMotion();});
-track.addEventListener('focusin',()=>{focused=true;syncMotion();});
-track.addEventListener('focusout',()=>{focused=false;syncMotion();});
-track.addEventListener('wheel',()=>{userPaused=true;updatePause();syncMotion();},{passive:true});
-track.addEventListener('pointerdown',event=>{
-  userPaused=true;updatePause();syncMotion();
-  if(event.pointerType!=='mouse'||event.button!==0)return;
-  drag={x:event.clientX,left:track.scrollLeft};track.classList.add('dragging');track.setPointerCapture(event.pointerId);
-});
-track.addEventListener('pointermove',event=>{if(drag){event.preventDefault();track.scrollLeft=drag.left+drag.x-event.clientX;}});
-function endDrag(){drag=null;track.classList.remove('dragging');position=track.scrollLeft;}
-track.addEventListener('pointerup',endDrag);track.addEventListener('pointercancel',endDrag);
-track.addEventListener('keydown',event=>{
-  const step=cards[0].getBoundingClientRect().width+parseFloat(getComputedStyle(track).gap);
-  let next;
-  if(event.key==='ArrowRight')next=track.scrollLeft+step;
-  if(event.key==='ArrowLeft')next=track.scrollLeft-step;
-  if(event.key==='Home')next=0;
-  if(event.key==='End')next=track.scrollWidth-track.clientWidth;
-  if(next!==undefined){event.preventDefault();userPaused=true;updatePause();syncMotion();track.scrollLeft=next;}
-});
-if('IntersectionObserver' in window){
-  new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;syncMotion();},{threshold:.25}).observe(track);
-}else{inView=true;syncMotion();}
-document.addEventListener('visibilitychange',syncMotion);
-reducedMotion.addEventListener('change',()=>{userPaused=reducedMotion.matches;updatePause();syncMotion();});
-addEventListener('resize',()=>{position=Math.min(track.scrollLeft,track.scrollWidth-track.clientWidth);},{passive:true});
-updatePause();
-
-
 const lightbox = document.querySelector('#lightbox');
 document.querySelectorAll('[data-image]').forEach(button => button.addEventListener('click', () => {
   lightbox.querySelector('img').src = button.dataset.image;

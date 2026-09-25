@@ -77,12 +77,45 @@ addEventListener('hashchange', () => revealDestination(location.hash));
 revealDestination(location.hash);
 
 const lightbox = document.querySelector('#lightbox');
-document.querySelectorAll('[data-image]').forEach(button => button.addEventListener('click', () => {
-  lightbox.querySelector('img').src = button.dataset.image;
-  lightbox.querySelector('img').alt = button.querySelector('img').alt;
-  lightbox.querySelector('#lightbox-caption').textContent = button.dataset.caption;
+const albums = JSON.parse(document.querySelector('#gallery-albums').textContent);
+let activeAlbum = 0;
+let activePhoto = 0;
+function showAlbumPhoto(index) {
+  const album = albums[activeAlbum];
+  activePhoto = (index + album.photos.length) % album.photos.length;
+  const photo = album.photos[activePhoto];
+  lightbox.querySelector('img').src = photo.src;
+  lightbox.querySelector('img').alt = photo.alt;
+  lightbox.querySelector('#album-title').textContent = album.title;
+  lightbox.querySelector('#lightbox-caption').textContent = photo.caption;
+  lightbox.querySelector('#album-counter').textContent = `${activePhoto + 1} / ${album.photos.length}`;
+}
+document.querySelectorAll('[data-album]').forEach(button => button.addEventListener('click', () => {
+  activeAlbum = Number(button.dataset.album);
+  showAlbumPhoto(0);
   lightbox.showModal();
 }));
+document.querySelector('#album-prev').addEventListener('click', () => showAlbumPhoto(activePhoto - 1));
+document.querySelector('#album-next').addEventListener('click', () => showAlbumPhoto(activePhoto + 1));
+lightbox.addEventListener('keydown', event => {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    event.preventDefault();
+    showAlbumPhoto(activePhoto + (event.key === 'ArrowRight' ? 1 : -1));
+  }
+});
+let swipeStart = null;
+const albumStage = lightbox.querySelector('.album-stage');
+albumStage.addEventListener('touchstart', event => {
+  swipeStart = event.touches.length === 1 ? {x:event.touches[0].clientX,y:event.touches[0].clientY} : null;
+}, {passive:true});
+albumStage.addEventListener('touchend', event => {
+  if (!swipeStart || !event.changedTouches.length) return;
+  const dx = event.changedTouches[0].clientX - swipeStart.x;
+  const dy = event.changedTouches[0].clientY - swipeStart.y;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) showAlbumPhoto(activePhoto + (dx < 0 ? 1 : -1));
+  swipeStart = null;
+}, {passive:true});
+albumStage.addEventListener('touchcancel', () => { swipeStart = null; }, {passive:true});
 document.querySelectorAll('dialog').forEach(dialog => {
   dialog.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', event => {

@@ -80,7 +80,7 @@ const lightbox = document.querySelector('#lightbox');
 document.querySelectorAll('[data-image]').forEach(button => button.addEventListener('click', () => {
   lightbox.querySelector('img').src = button.dataset.image;
   lightbox.querySelector('img').alt = button.querySelector('img').alt;
-  lightbox.querySelector('p').textContent = button.dataset.caption;
+  lightbox.querySelector('#lightbox-caption').textContent = button.dataset.caption;
   lightbox.showModal();
 }));
 document.querySelectorAll('dialog').forEach(dialog => {

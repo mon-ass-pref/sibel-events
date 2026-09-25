@@ -322,3 +322,13 @@ footer.site-footer{--footer-columns:1fr 1.12fr 1fr;padding:60px 6% 28px;backgrou
  .site-footer .footer-bottom p,.site-footer .footer-links{font-size:.68rem}
  .site-footer .footer-links{margin-top:3px}
 }
+
+/* Center the visible desktop content, rather than oversized empty grid tracks. */
+@media(min-width:1051px){
+ .site-footer .footer-main,.site-footer .footer-bottom{
+  max-width:1200px;
+  grid-template-columns:260px 260px 300px;
+  justify-content:space-between;
+  column-gap:24px;
+ }
+}

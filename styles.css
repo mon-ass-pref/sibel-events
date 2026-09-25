@@ -255,3 +255,13 @@ footer.site-footer{--footer-columns:1fr 1.12fr 1fr;padding:60px 6% 28px;backgrou
  .option-card::before,.option-card::after{display:none}
  .option-card:hover,.option-card:focus-within{transform:none}
 }
+
+/* Photo album: preserve each portrait and landscape without forced cropping. */
+.gallery.gallery-expanded{display:block;columns:3;column-gap:22px}
+.gallery-expanded .gallery-item{display:block;width:100%;height:auto;margin:0 0 22px;break-inside:avoid;border-radius:4px}
+.gallery-expanded .gallery-item img{height:auto;width:100%;object-fit:contain}
+.gallery-expanded .gallery-item>span{font-size:1.22rem;line-height:1.15;padding:65px 20px 20px;gap:12px}
+.gallery-expanded .gallery-item b{width:34px;height:34px;flex-shrink:0;font-size:1rem}
+.gallery-expanded .gallery-item:focus-visible{outline-offset:-5px}
+@media(max-width:1000px){.gallery.gallery-expanded{columns:2;column-gap:18px}.gallery-expanded .gallery-item{margin-bottom:18px}}
+@media(max-width:560px){.gallery.gallery-expanded{columns:1}.gallery-expanded .gallery-item{margin-bottom:20px}.gallery-expanded .gallery-item>span{font-size:1.3rem;padding:60px 22px 22px}}

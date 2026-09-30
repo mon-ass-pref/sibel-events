@@ -3,6 +3,12 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<script>
+// A shared link always opens on the hero; menu anchors still work within the page.
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
+window.addEventListener('pageshow', () => window.scrollTo({top:0,left:0,behavior:'instant'}), {once:true});
+</script>
 <title>Sibel Events | DJ mariage Gard, Hérault, Vaucluse &amp; Drôme</title>
 <meta content="Votre DJ mariage et événementiel dans le Gard, l’Hérault, le Vaucluse et la Drôme. Sibel Events : musique, son, lumière et options. Demandez votre devis personnalisé." name="description"/>
 <meta content="noindex,nofollow" name="robots"/>
